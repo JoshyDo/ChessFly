@@ -21,6 +21,10 @@ pub struct LifNetwork {
 
     // Step counter
     pub total_steps: u64,
+
+    // Neuromodulatory state (Octopamine / Serotonin)
+    pub octopamine_level: f32,
+    pub conductance_gain: f32,
 }
 
 impl LifNetwork {
@@ -44,6 +48,8 @@ impl LifNetwork {
             delay_steps,
             refractory_steps,
             total_steps: 0,
+            octopamine_level: 0.0,
+            conductance_gain: 1.0,
             params,
             graph,
         }
@@ -62,6 +68,14 @@ impl LifNetwork {
         }
         self.queue_slot = 0;
         self.total_steps = 0;
+        self.octopamine_level = 0.0;
+        self.conductance_gain = 1.0;
+    }
+
+    /// Set neuromodulatory gain and octopaminergic excitation.
+    pub fn set_neuromodulation(&mut self, octopamine: f32, conductance_gain: f32) {
+        self.octopamine_level = octopamine.clamp(0.0, 1.0);
+        self.conductance_gain = conductance_gain.clamp(0.1, 5.0);
     }
 
     /// Set continuous sensory drive currents (e.g. for background or visual input).
@@ -93,7 +107,9 @@ impl LifNetwork {
         let g_coeff = (a - b) / 3.0;
         let drive_coeff = 1.0 - a;
         let v_rest = self.params.v_rest;
-        let v_thresh = self.params.v_thresh;
+        // Neuromodulation: Octopamine lowers firing threshold (hyper-sharp tactical reflex)
+        let v_thresh = self.params.v_thresh - (self.octopamine_level * 0.6);
+        let cond_gain = 1.0 + (self.conductance_gain - 1.0) * 0.18;
         let n = self.graph.num_neurons;
         let num_slots = self.delay_queue.len();
 
@@ -109,7 +125,7 @@ impl LifNetwork {
                 for (&post_idx, &weight) in post_indices.iter().zip(post_weights.iter()) {
                     let j = post_idx as usize;
                     if j < n && self.refractory_steps_remaining[j] == 0 {
-                        self.g[j] += weight;
+                        self.g[j] += weight * cond_gain;
                     }
                 }
             }

@@ -141,6 +141,17 @@ pub extern "C" fn chessfly_apply_plasticity(
     network.apply_dopaminergic_plasticity(kc_slice, mbon_slice, dan_signal, eta)
 }
 
+#[no_mangle]
+pub extern "C" fn chessfly_set_neuromodulation(
+    net: *mut LifNetwork,
+    octopamine: f32,
+    conductance_gain: f32,
+) {
+    assert!(!net.is_null());
+    let network = unsafe { &mut *net };
+    network.set_neuromodulation(octopamine, conductance_gain);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

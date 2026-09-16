@@ -108,6 +108,13 @@ class LifSimulator:
         ]
         self._lib.chessfly_apply_plasticity.restype = C.c_size_t
 
+        self._lib.chessfly_set_neuromodulation.argtypes = [
+            C.c_void_p,
+            C.c_float,
+            C.c_float,
+        ]
+        self._lib.chessfly_set_neuromodulation.restype = None
+
         # Prepare numpy arrays
         self.indptr = np.ascontiguousarray(indptr, dtype=np.uint64)
         self.indices = np.ascontiguousarray(indices, dtype=np.uint32)
@@ -256,3 +263,11 @@ class LifSimulator:
             C.c_float(eta),
         )
         return int(modified)
+
+    def set_neuromodulation(self, octopamine: float = 0.0, conductance_gain: float = 1.0):
+        """Configure octopaminergic excitation (attacks/tension) and conductance gain."""
+        self._lib.chessfly_set_neuromodulation(
+            self._handle,
+            C.c_float(octopamine),
+            C.c_float(conductance_gain),
+        )
