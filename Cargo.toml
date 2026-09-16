@@ -1,0 +1,19 @@
+[package]
+name = "chessfly_core"
+version = "0.1.0"
+edition = "2021"
+authors = ["ChessFly Team"]
+description = "High-performance biophysical LIF network solver for the Drosophila connectome"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+half = { version = "2.4", features = ["num-traits"] }
+rayon = "1.10"
+rand = "0.8"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

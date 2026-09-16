@@ -1,0 +1,31 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environments & IDE
+.env
+.venv/
+env/
+venv/
+.idea/
+.vscode/
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+
+# Large Connectome raw downloads (>1GB)
+connectome_data/*.feather
+connectome_data/*.arrow
+connectome_data/*.tmp
+connectome_data/*.download
