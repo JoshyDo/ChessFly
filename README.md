@@ -143,16 +143,19 @@ chessfly-uci
 
 ---
 
-## 📊 Benchmark & Performance Summary
+## 📊 Benchmark & Performance Summary (32 Positions Across 5 Tiers)
 
-| Metric | ChessFly V1 | ChessFly V2 (Grandmaster) | ChessFly V3 (Super-Grandmaster) |
+The engine was evaluated on a comprehensive 32-position test suite ranging from 700 to 1950 ELO:
+
+| Rating Tier | ChessFly V1 | ChessFly V2 (Grandmaster) | ChessFly V3 (Super-Grandmaster) |
 |---|---|---|---|
-| **Tactical Benchmark Accuracy** | 56.2% (9/16) | 93.8% (15/16) | **100.0% (16/16)** |
-| **Estimated Playing Strength** | ~1334 ELO | ~1690 ELO | **~1750 ELO** (+416 ELO gain) |
-| **Visual Architecture** | Whole-field optic flow | 64-Square Retinotopy | **64-Square Retinotopy + Receptive Fields** |
-| **Tactical Optics** | Direct captures | Ray-Tracing Pins & Skewers | **Static Exchange Evaluation (SEE) Optics** |
-| **Opening Knowledge** | None | None | **Mushroom Body Associative Imprinting** |
-| **Neuromodulation** | Dopamine (DA) | OA + Serotonin + DA | **OA + Serotonin + DA + Endgame Shift** |
+| **Tier 1: 700–900 ELO (Elementary / Blunder Defense)** | 66.7% (4/6) | 83.3% (5/6) | **83.3% (5/6)** |
+| **Tier 2: 950–1150 ELO (Intermediate / King Safety)** | 100.0% (6/6) | 83.3% (5/6) | **83.3% (5/6)** |
+| **Tier 3: 1200–1400 ELO (Club / Positional Motifs)** | 33.3% (2/6) | 83.3% (5/6) | **100.0% (6/6)** |
+| **Tier 4: 1450–1650 ELO (Candidate Master / Deep SEE)** | 28.6% (2/7) | 57.1% (4/7) | **85.7% (6/7)** |
+| **Tier 5: 1700–1950 ELO (Master / Strategic Prophylaxis)** | 14.3% (1/7) | 42.9% (3/7) | **42.9% (3/7)** |
+| **Overall Accuracy (32 Positions)** | **46.9% (15/32)** | **68.8% (22/32)** | **78.1% (25/32)** |
+| **Calibrated Connectome ELO** | **~1235 ELO** | **~1509 ELO** | **~1626 ELO** (+391 ELO gain) |
 | **Single-Move Piece Blunders** | **0** | **0** | **0** |
 | **Search Tree / Minimax Depth** | **Strictly 0** | **Strictly 0** | **Strictly 0 (Pure 1-Ply Connectome)** |
 
