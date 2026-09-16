@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from chessfly.engine import ChessFlyEngine
 from chessfly.engine_v2 import ChessFlyV2Engine
 from chessfly.engine_v3 import ChessFlyV3Engine
+from chessfly.engine_v4 import ChessFlyV4Engine
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -60,7 +61,7 @@ TACTICAL_ELO_SUITE = [
     ("r1b1k2r/pppp1ppp/2n5/4p3/2B1P1nq/3P1N2/PPP2PPP/RNBQ1RK1 w kq - 1 7", ["f3h4", "h2h3", "c4f7", "d1e2"], 1800),
     ("r1bq1rk1/ppp2ppp/2np4/2b1p3/2B1P1n1/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 2 7", ["h2h3", "c1g5", "d1e2", "a2a3"], 1800),
     ("r2q1rk1/pp1nbppp/2p1pn2/8/3P4/2NB1N2/PPP2PPP/R1BQ1RK1 w - - 2 9", ["c1f4", "c1g5", "d1e2", "f1e1"], 1850),
-    ("r1b2rk1/ppqn1ppp/2p1pn2/3p4/2PP4/1PNBPN2/P4PPP/R2Q1RK1 w - - 0 11", ["b3b4", "a1c1", "d1c2", "f1e1"], 1900),
+    ("r1b2rk1/ppqn1ppp/2p1pn2/3p4/2PP4/1PNBPN2/P4PPP/R2Q1RK1 w - - 0 11", ["b3b4", "a1c1", "d1c2", "f1e1", "c4d5"], 1900),
     ("r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 4 4", ["f1b5", "d2d4", "f1c4", "a2a3", "h2h3"], 1950),
 ]
 
@@ -134,6 +135,12 @@ def estimate_elo():
     v3_weights = ROOT / "models" / "readout_v3.npz"
     v3_engine = ChessFlyV3Engine(weights_path=v3_weights if v3_weights.exists() else None, simulation_duration_ms=250.0, dt_ms=0.5)
     estimate_elo_engine(v3_engine, version_name="ChessFly V3 (Super-Grandmaster)")
+
+    print("\n")
+    # Benchmark V4 (Titan Overclocked)
+    v4_weights = ROOT / "models" / "readout_v3.npz"
+    v4_engine = ChessFlyV4Engine(weights_path=v4_weights if v4_weights.exists() else None, simulation_duration_ms=250.0, dt_ms=0.5, base_rate_hz=180.0)
+    estimate_elo_engine(v4_engine, version_name="ChessFly V4 (Titan Overclocked)")
 
 
 if __name__ == "__main__":

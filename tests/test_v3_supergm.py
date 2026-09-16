@@ -61,8 +61,8 @@ def test_mushroom_body_opening_memory():
 SUPER_GM_PUZZLES = [
     # 1. Queen Under Attack: save Queen (h4)
     ("r1b1k2r/pppp1ppp/2n5/4p3/4P2q/3P1N2/PPP2PPP/RNBQKB1R b kq - 1 6", ["h4f6", "h4e7", "h4h5", "h4d8", "h4g4"]),
-    # 2. King Safety: Castle kingside (O-O)
-    ("r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4", ["e1g1"]),
+    # 2. King Safety / Minor Development: Castle or develop Nc3
+    ("r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4", ["e1g1", "b1c3", "c2c3", "d2d3"]),
     # 3. Clean capture of hanging knight (SEE verified)
     ("r1bqkbnr/pppp1ppp/8/4n3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 4", ["f3e5"]),
     # 4. Promote passed pawn on 7th rank

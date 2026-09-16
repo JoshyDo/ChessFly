@@ -126,6 +126,30 @@ class SpatialRetinotopicEncoder:
         # -------------------------------------------------------------
         # 2. Spatial Target Pursuit & Master Positional Features
         # -------------------------------------------------------------
+        # 0. Checkmate Delivery (Instant Lethal Prey Capture)
+        if next_board.is_checkmate():
+            pursuit_map[move.to_square] = 1.0
+            threat_map.fill(0.0)
+            return threat_map, pursuit_map, {"checkmate": 1.0, "mean_threat": 0.0, "max_threat": 0.0, "mean_pursuit": 1.0 / 64.0, "max_pursuit": 1.0}
+
+        # Impending Checkmate by Opponent (Looming Predation - Emergency Escape)
+        opponent_can_mate = False
+        for reply in next_board.legal_moves:
+            if next_board.gives_check(reply):
+                nb2 = next_board.copy(stack=False)
+                nb2.push(reply)
+                if nb2.is_checkmate():
+                    opponent_can_mate = True
+                    break
+        if opponent_can_mate:
+            threat_map.fill(1.0)
+            pursuit_map.fill(0.0)
+            return threat_map, pursuit_map, {"mean_threat": 1.0, "max_threat": 1.0, "mean_pursuit": 0.0, "max_pursuit": 0.0, "captured_val": 0.0}
+
+        # Check Delivery
+        if next_board.is_check():
+            pursuit_map[move.to_square] += 0.35
+
         # A. Captures and favorable trades
         captured_val = 0.0
         if board.is_capture(move):
@@ -138,7 +162,9 @@ class SpatialRetinotopicEncoder:
             if captured_val > 0:
                 opp_defs = list(next_board.attackers(opponent, move.to_square))
                 if not opp_defs:
-                    pursuit_map[move.to_square] += min(1.0, captured_val / 3.0 + 0.4)
+                    pursuit_map[move.to_square] = 1.0
+                    if captured_val >= 3.0:
+                        pursuit_map[move.from_square] += 0.40
                 else:
                     moving_p = board.piece_at(move.from_square)
                     moving_val = PIECE_VALUES.get(moving_p.piece_type if moving_p else chess.PAWN, 1.0)
@@ -202,6 +228,8 @@ class SpatialRetinotopicEncoder:
                 pursuit_map[sq] += 0.30
             elif next_board.is_attacked_by(player, sq):
                 pursuit_map[sq] += 0.10
+        if move.to_square in EXTENDED_CENTER:
+            pursuit_map[move.to_square] += 0.15
 
         if moving_piece and moving_piece.piece_type in [chess.KNIGHT, chess.BISHOP]:
             from_rank = chess.square_rank(move.from_square)
@@ -209,6 +237,28 @@ class SpatialRetinotopicEncoder:
             if (player == chess.WHITE and from_rank == 0 and to_rank in [1, 2, 3]) or \
                (player == chess.BLACK and from_rank == 7 and to_rank in [4, 5, 6]):
                 pursuit_map[move.to_square] += 0.25
+
+            # Undevelopment penalty: retreating minor pieces back to starting home rank
+            if not board.is_check() and len(board.move_stack) < 30:
+                if (player == chess.WHITE and from_rank > 0 and to_rank == 0) or \
+                   (player == chess.BLACK and from_rank < 7 and to_rank == 7):
+                    threat_map[move.to_square] += 0.40
+
+            # Priority on developing back-rank pieces before moving already developed pieces
+            if len(board.move_stack) < 20:
+                home_rank = 0 if player == chess.WHITE else 7
+                undeveloped_minors = [
+                    sq for sq in chess.SQUARES
+                    if chess.square_rank(sq) == home_rank
+                    and board.piece_at(sq)
+                    and board.piece_at(sq).color == player
+                    and board.piece_at(sq).piece_type in [chess.KNIGHT, chess.BISHOP]
+                ]
+                if undeveloped_minors:
+                    if from_rank == home_rank:
+                        pursuit_map[move.to_square] += 0.20
+                    elif not board.is_capture(move) and not next_board.is_check():
+                        threat_map[move.to_square] += 0.20
 
             # Penalize blocking central pawns (e.g. Bd3 blocking d2 pawn before it moves)
             if move.to_square == chess.D3 and board.piece_at(chess.D2) == chess.Piece(chess.PAWN, player):
@@ -219,6 +269,33 @@ class SpatialRetinotopicEncoder:
                 threat_map[chess.D6] += 0.35
             elif move.to_square == chess.E6 and board.piece_at(chess.E7) == chess.Piece(chess.PAWN, player):
                 threat_map[chess.E6] += 0.35
+
+        # Predatory Initiative: Attacking opponent pieces with lower/equal value
+        if moving_piece and not board.is_capture(move):
+            for target_sq in next_board.attacks(move.to_square):
+                if not board.is_attacked_by(player, target_sq):
+                    opp_p = next_board.piece_at(target_sq)
+                    if opp_p and opp_p.color == opponent:
+                        opp_v = PIECE_VALUES.get(opp_p.piece_type, 1.0)
+                        my_v = PIECE_VALUES.get(moving_piece.piece_type, 1.0)
+                        if my_v <= opp_v and opp_v >= 3.0:
+                            pursuit_map[move.to_square] += 0.35  # E.g. pawn kicks knight/bishop/queen
+
+        # King Zone Convergence (Mating batteries & breakthrough attacks on weak pawns)
+        opp_king = next_board.king(opponent)
+        if opp_king is not None:
+            for k_neighbor in chess.SquareSet(chess.BB_KING_ATTACKS[opp_king]):
+                friendly_atts = list(next_board.attackers(player, k_neighbor))
+                if len(friendly_atts) >= 2 and (move.to_square == k_neighbor or move.to_square in friendly_atts):
+                    opp_defs = list(next_board.attackers(opponent, k_neighbor))
+                    if len(opp_defs) <= 1:
+                        pursuit_map[move.to_square] += 0.40
+
+        # Minor piece & Rook ray-tracing mobility optics
+        if moving_piece and moving_piece.piece_type in [chess.BISHOP, chess.ROOK, chess.KNIGHT]:
+            mobility = len(next_board.attacks(move.to_square))
+            if mobility >= 5:
+                pursuit_map[move.to_square] += min(0.25, mobility * 0.02)
 
         # G. Pinning Opponent Pieces (Ray-Tracing Target Pursuit)
         opp_pinned = [
@@ -231,9 +308,9 @@ class SpatialRetinotopicEncoder:
 
         # H. Static Exchange Evaluation (SEE Ray-Tracing Optics)
         see_cp = evaluate_move_see(board, move)
-        if see_cp < -80:
-            # Net material loss: inject looming threat on destination
-            threat_map[move.to_square] += min(1.0, abs(see_cp) / 350.0)
+        if see_cp < -50:
+            # Net material loss: inject decisive looming threat on destination
+            threat_map[move.to_square] += min(1.0, 0.40 + abs(see_cp) / 250.0)
         elif see_cp > 50:
             # Net material gain: inject target pursuit on destination
             pursuit_map[move.to_square] += min(1.0, see_cp / 350.0)
@@ -277,6 +354,13 @@ class SpatialRetinotopicEncoder:
         )
         is_endgame = total_mat <= 4
         if is_endgame and moving_piece and moving_piece.piece_type == chess.KING:
+            from_dist = min(chess.square_distance(move.from_square, c) for c in CENTER_SQUARES)
+            to_dist = min(chess.square_distance(move.to_square, c) for c in CENTER_SQUARES)
+            if to_dist < from_dist:
+                pursuit_map[move.to_square] += 0.35 * (from_dist - to_dist)
+            elif to_dist > from_dist:
+                threat_map[move.to_square] += 0.20 * (to_dist - from_dist)
+
             if move.to_square in CENTER_SQUARES:
                 pursuit_map[move.to_square] += 0.40
             elif move.to_square in EXTENDED_CENTER:

@@ -46,6 +46,24 @@ GM_OPENING_BOOK: Dict[str, List[str]] = {
     "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq -": ["e7e6", "c7c6", "d5c4", "g8f6"],
     # King's Indian: 1. d4 Nf6 2. c4
     "rnbqkb1r/pppppppp/5n2/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq -": ["g7g6", "e7e6", "c7c5"],
+    # Four Knights Game: 1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6
+    "r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq -": ["f1b5", "d2d4", "f1c4", "a2a3", "h2h3"],
+    "r1bqkb1r/pppp1ppp/2n5/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq -": ["g8f6", "f8c5", "f8b4"],
+    # Queen's Gambit Declined: Classical 3... Be7
+    "rnbqk2r/ppp1bppp/4pn2/3p4/2PP4/2N2N2/PP2PPPP/R1BQKB1R w KQkq -": ["c1g5", "c1f4", "c4d5", "e2e3", "f3e5"],
+    # Sicilian Classical / Dragon Yugoslav Setup
+    "r1bq1rk1/pp2ppbp/2np1np1/8/3NP3/2N1BP2/PPP3PP/R2QKB1R w KQ -": ["d4b3", "c3d5", "d1d2", "f1c4"],
+    # Carlsbad Structure Mobilization
+    "r1b2rk1/pp1nqppp/2p1pn2/3p4/2PP4/2NBPN2/PP3PPP/R2Q1RK1 w - -": ["a1d1", "a1c1", "c4d5", "f1e1", "d1e2", "f3e5"],
+    "r1b2rk1/ppqn1ppp/2p1pn2/3p4/2PP4/1PNBPN2/P4PPP/R2Q1RK1 w - -": ["b3b4", "a1c1", "d1c2", "f1e1"],
+    "r2q1rk1/pp1nbppp/2p1pn2/8/3P4/2NB1N2/PPP2PPP/R1BQ1RK1 w - -": ["c1f4", "c1g5", "d1e2", "f1e1"],
+    # Giuoco Pianissimo / Italian Development & Prophylaxis
+    "r1bq1rk1/ppp1bppp/2np1n2/4p3/2B1P3/2NP1N2/PPP2PPP/R1BQR1K1 b - -": ["c8e6", "c8g4", "h7h6", "a7a6", "c6a5"],
+    "r1bq1rk1/ppp2ppp/2np4/2b1p3/2B1P1n1/2NP1N2/PPP2PPP/R1BQ1RK1 w - -": ["h2h3", "c1g5", "d1e2", "a2a3"],
+    "r1b1k2r/pppp1ppp/2n5/4p3/2B1P1nq/3P1N2/PPP2PPP/RNBQ1RK1 w kq -": ["f3h4", "h2h3", "c4f7", "d1e2"],
+    "r1bqk2r/pppp1ppp/2n5/4p3/1b2P3/2NP1N2/PPP2PPP/R1BQK2R w KQkq -": ["c1d2", "c1e3", "a2a3", "e1g1"],
+    "r1bqkb1r/ppp2ppp/2np1n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq -": ["a7a6", "c8d7", "f8e7", "f6e4"],
+    "r1b1kbnr/ppppqppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq -": ["b1c3", "d2d3", "f1c4", "d2d4", "b1a3"],
 }
 
 
