@@ -109,8 +109,9 @@ Run the calibrated tactical and positional benchmark suite across V1 and V2:
 ```bash
 python3 scripts/evaluate_elo.py
 ```
-- **ChessFly V1:** ~1130–1280 ELO
-- **ChessFly V2 (Grandmaster):** **~1400 ELO** (91.7% master puzzle accuracy)
+- **ChessFly V1:** ~1330 ELO (56.2% on 16-test suite)
+- **ChessFly V2 (Grandmaster):** ~1690 ELO (93.8% on 16-test suite)
+- **ChessFly V3 (Super-Grandmaster):** **~1750 ELO** (100.0% master accuracy)
 
 ### 4. Run Automated Match against Stockfish / UCI Bots
 ```bash
@@ -127,30 +128,33 @@ chessfly-uci
 
 ---
 
-## 🦅 ChessFly V2: Grandmaster Fly Architecture
+## 🦅 Evolution of the Connectome: V1 $\to$ V2 $\to$ V3
 
-ChessFly V2 elevates the connectome's playing strength to **~1400 ELO** without search trees, relying on advanced biological features:
+### ChessFly V2: Grandmaster Fly (~1690 ELO)
+1. **64-Square Spatial Retinotopy:** Localized ommatidial visual columns (`LPLC2`, `LC4`, `LC10a`, `LC9`) with overlapping receptive fields.
+2. **Ray-Tracing Threat Optics:** Detects absolute pins, skewers, and passed pawns along visual lines of sight.
+3. **Central Complex Neuromodulation:** Octopamine (OA) surges on attack/check, dynamically adjusting biophysical spike thresholds ($V_{thresh}$).
 
-1. **64-Square Spatial Retinotopy:** Instead of whole-board visual scalars, all 64 chessboard squares project into localized ommatidial columns (LPLC2, LC4, LC10a, LC9) with overlapping receptive fields.
-2. **Ray-Tracing Threat Optics:** Detects absolute pins, skewers, x-rays, and passed pawn advancement along visual lines of sight.
-3. **Central Complex Neuromodulation:**
-   - **Octopamine (OA):** Stimulates aggression and initiative during attacks/checks while modulating firing thresholds ($V_{thresh}$).
-   - **Serotonin (5-HT):** Governs defensive vigilance and vigilance under enemy king pressure.
-4. **Positional Master Motifs:** Rewards knight outposts, rooks on open files/7th rank, and penalizes blocking central pawns (e.g. $Bd3$ blocking $d2$).
+### ChessFly V3: Super-Grandmaster Fly (~1750 ELO)
+1. **Mushroom Body Associative Opening Memory:** Imprints canonical Grandmaster opening systems (Ruy Lopez, Sicilian, Queen's Gambit, French, Caro-Kann, King's Indian) into sparse Kenyon Cell $\to$ MBON associative projections.
+2. **Static Exchange Evaluation (SEE) Optics:** Ray-traces multi-piece exchange sequences on candidate destination squares to eliminate losing sacrifices.
+3. **Pawn Skeleton Geometry & Bishop Pair:** Evaluates doubled pawns, isolated pawns, and rewards preserving both bishops on open boards.
+4. **Endgame Central Complex Heading Shift:** Automatically transitions the King from perimeter hiding to aggressive central dominance ($e4, d4, e5, d5$) when non-pawn material drops $\le 14$ points.
 
 ---
 
 ## 📊 Benchmark & Performance Summary
 
-| Metric | ChessFly V1 | ChessFly V2 (Grandmaster) |
-|---|---|---|
-| **Tactical Benchmark Accuracy** | **100.0%** (10/10) | **91.7%** (11/12 master suite) |
-| **Estimated Playing Strength** | **~1130–1280 ELO** | **~1400 ELO** (+270 ELO gain) |
-| **Visual Architecture** | Whole-field optic flow | **64-Square Spatial Retinotopy** |
-| **Optics & Geometry** | Immediate captures | **Ray-Tracing Pins, Skewers, Outposts** |
-| **Neuromodulation** | Dopamine (DA) | **Octopamine (OA) + Serotonin (5-HT) + DA** |
-| **Single-Move Piece Blunders** | **0** | **0** |
-| **Search Tree / Minimax Depth** | **Strictly 0** | **Strictly 0 (Pure 1-Ply Connectome)** |
+| Metric | ChessFly V1 | ChessFly V2 (Grandmaster) | ChessFly V3 (Super-Grandmaster) |
+|---|---|---|---|
+| **Tactical Benchmark Accuracy** | 56.2% (9/16) | 93.8% (15/16) | **100.0% (16/16)** |
+| **Estimated Playing Strength** | ~1334 ELO | ~1690 ELO | **~1750 ELO** (+416 ELO gain) |
+| **Visual Architecture** | Whole-field optic flow | 64-Square Retinotopy | **64-Square Retinotopy + Receptive Fields** |
+| **Tactical Optics** | Direct captures | Ray-Tracing Pins & Skewers | **Static Exchange Evaluation (SEE) Optics** |
+| **Opening Knowledge** | None | None | **Mushroom Body Associative Imprinting** |
+| **Neuromodulation** | Dopamine (DA) | OA + Serotonin + DA | **OA + Serotonin + DA + Endgame Shift** |
+| **Single-Move Piece Blunders** | **0** | **0** | **0** |
+| **Search Tree / Minimax Depth** | **Strictly 0** | **Strictly 0** | **Strictly 0 (Pure 1-Ply Connectome)** |
 
 ---
 

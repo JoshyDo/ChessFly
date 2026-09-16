@@ -19,6 +19,7 @@ import numpy as np
 
 from chessfly.circuit_registry import CircuitRegistry
 from chessfly.chess_encoder import PIECE_VALUES, CENTER_SQUARES, EXTENDED_CENTER
+from chessfly.see_optics import evaluate_move_see
 
 
 class SpatialRetinotopicEncoder:
@@ -227,6 +228,59 @@ class SpatialRetinotopicEncoder:
         ]
         if opp_pinned:
             pursuit_map[move.to_square] += 0.30 * min(2, len(opp_pinned))
+
+        # H. Static Exchange Evaluation (SEE Ray-Tracing Optics)
+        see_cp = evaluate_move_see(board, move)
+        if see_cp < -80:
+            # Net material loss: inject looming threat on destination
+            threat_map[move.to_square] += min(1.0, abs(see_cp) / 350.0)
+        elif see_cp > 50:
+            # Net material gain: inject target pursuit on destination
+            pursuit_map[move.to_square] += min(1.0, see_cp / 350.0)
+
+        # I. Bishop Pair Advantage
+        friendly_bishops = len(next_board.pieces(chess.BISHOP, player))
+        opp_bishops = len(next_board.pieces(chess.BISHOP, opponent))
+        if friendly_bishops >= 2 and opp_bishops < 2:
+            pursuit_map[move.to_square] += 0.15
+
+        # J. Pawn Skeleton Geometry
+        if moving_piece and moving_piece.piece_type == chess.PAWN:
+            to_file = chess.square_file(move.to_square)
+            friendly_pawns = next_board.pieces(chess.PAWN, player)
+            # Doubled pawns penalty
+            file_pawns = len(friendly_pawns & chess.SquareSet(chess.BB_FILES[to_file]))
+            if file_pawns > 1:
+                threat_map[move.to_square] += 0.15 * (file_pawns - 1)
+
+            # Isolated pawn penalty
+            adj_files = [f for f in [to_file - 1, to_file + 1] if 0 <= f <= 7]
+            adj_pawns = sum(len(friendly_pawns & chess.SquareSet(chess.BB_FILES[f])) for f in adj_files)
+            if adj_pawns == 0:
+                threat_map[move.to_square] += 0.15
+
+        # K. King Shield Integrity (Opening/Middlegame)
+        opp_queens = len(next_board.pieces(chess.QUEEN, opponent))
+        if opp_queens > 0:
+            k_sq = next_board.king(player)
+            if k_sq in [chess.G1, chess.H1, chess.G8, chess.H8]:  # Castled kingside
+                shield_rank = 1 if player == chess.WHITE else 6
+                shield_sqs = [chess.square(f, shield_rank) for f in [5, 6, 7]]
+                missing_shield = sum(1 for s in shield_sqs if next_board.piece_at(s) != chess.Piece(chess.PAWN, player))
+                if missing_shield > 1:
+                    threat_map[k_sq] += 0.20 * (missing_shield - 1)
+
+        # L. Endgame Central Complex Heading Transition
+        total_mat = sum(
+            len(next_board.pieces(pt, chess.WHITE)) + len(next_board.pieces(pt, chess.BLACK))
+            for pt in [chess.KNIGHT, chess.BISHOP, chess.ROOK, chess.QUEEN]
+        )
+        is_endgame = total_mat <= 4
+        if is_endgame and moving_piece and moving_piece.piece_type == chess.KING:
+            if move.to_square in CENTER_SQUARES:
+                pursuit_map[move.to_square] += 0.40
+            elif move.to_square in EXTENDED_CENTER:
+                pursuit_map[move.to_square] += 0.20
 
         # Clip maps
         np.clip(threat_map, 0.0, 1.0, out=threat_map)
